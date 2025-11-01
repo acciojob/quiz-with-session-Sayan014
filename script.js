@@ -2,6 +2,13 @@
 
 // Do not change code below this line
 // This code will just display the questions to the screen
+
+const questionsElement = document.getElementById("questions");
+const submitBtn = document.getElementById("submit");
+const scoreDiv = document.getElementById("score");
+
+// Retrieve progress (answers) from sessionStorage or start fresh
+let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || [];
 const questions = [
   {
     question: "What is the capital of France?",
@@ -46,6 +53,10 @@ function renderQuestions() {
       if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
       }
+		      choiceElement.addEventListener("change", () => {
+        userAnswers[i] = choice;
+        sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+      });
       const choiceText = document.createTextNode(choice);
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
@@ -53,4 +64,18 @@ function renderQuestions() {
     questionsElement.appendChild(questionElement);
   }
 }
+function calculateScore() {
+  let score = 0;
+  for (let i = 0; i < questions.length; i++) {
+    if (userAnswers[i] === questions[i].answer) {
+      score++;
+    }
+  }
+	  scoreDiv.textContent = `Your score is ${score} out of ${questions.length}.`;
+
+  // Save score in localStorage
+  localStorage.setItem("score", score);
+}
+
+submitBtn.addEventListener("click", calculateScore);
 renderQuestions();
